@@ -17,8 +17,8 @@ const createNewChat = () => {
 
 <template>
   <div class="bg-gray-100 p-4 h-full">
-    <h2 class="text-xl font-bold mb-4">
-      <div class="i-gg-chat-bubble-left"></div>
+    <h2 class="text-xl font-bold mb-4 flex items-center">
+      <div class="i-gg-comment text-xl mr-2"></div>
       <span>Conversations</span>
     </h2>
     <ul class="p-0 m-0 list-none">
