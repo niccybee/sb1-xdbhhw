@@ -1,19 +1,17 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { onClickOutside } from '@vueuse/core'
-// const props = defineProps({
-//   showModal: Boolean,
-// }) 
+import { defineModel } from 'vue'
 
-const showModal = ref(false)
-const target = ref(null)
-onClickOutside(target, event => showModal = false)
+const model = defineModel()
+
+const closeModal = () => {
+  model.value = false;
+};
 
 </script>
 <template>
-  <div class="modal-overlay" v-if="showModal">
-    <slot />
-    <div class="modal" ref="target">
+  <div>
+    <div class="modal-overlay o-1 z-9" v-if="model" @click="closeModal">{{ model }}</div>
+    <div class="modal z-10" ref="target">
       <slot />
     </div>
   </div>

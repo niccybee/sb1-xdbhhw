@@ -1,9 +1,11 @@
 import { defineStore } from "pinia";
+import { useLocalStorage, useStorage } from "@vueuse/core";
 
 export const useApiKeyStore = defineStore("apiKeys", {
   state: () => ({
-    keys: [],
+    keys: useStorage("keys", []),
     apiKey: null,
+    showKeyManager: false,
   }),
   getters: {
     hasApiKey: (state) => !!state.apiKey,

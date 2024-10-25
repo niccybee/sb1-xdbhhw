@@ -26,8 +26,7 @@ const createNewChat = () => {
       </ChatListItem>
     </ul>
     <button @click="createNewChat" class="btn flex items-center justify-center flex-grow mt-2">
-      <div class=" i-gg-math-plus pr-2">
-      </div>
+      <div class=" i-gg-math-plus pr-2"></div>
       <span>New Chat</span>
     </button>
   </div>

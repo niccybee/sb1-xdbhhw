@@ -1,40 +1,48 @@
 <script setup>
-// components
-// import ChatInterface from '~/components/ChatInterface.vue';
-// import ApiKeyManager from '~/components/ApiKeyManager.vue';
-// import Debug from '~/components/Debug.vue';
-// import AppHeader from '~/components/AppHeader.vue';
-// stores
+import { useKeyboard } from './composables/initKeyboard'
+import { useChatStore } from './stores/chat'
 import { storeToRefs } from 'pinia'
-import { useApiKeyStore } from '~/stores/apiKeys';
-const { apiKey } = storeToRefs(useApiKeyStore());
+const chatStore = useChatStore()
+const { currentChat } = storeToRefs(chatStore);
 
-const getOpenAIModels = async () => {
-  const response = await fetch('https://api.openai.com/v1/models', {
-    Authorization: 'Bearer ' + apiKey.value
-  });
-  return response.json();
-}
+
+const showQuickstart = computed(() => {
+  if (currentChat) {
+    console.log('current chat progress: ', currentChat.value)
+    return false
+    // return currentChat.value.messages.length > 0 ? true : false;
+  } else {
+    true
+  }
+})
+
+onMounted(() => {
+  useKeyboard()
+})
+
+// const getOpenAIModels = async () => {
+//   const response = await fetch('https://api.openai.com/v1/models', {
+//     Authorization: 'Bearer ' + apiKey.value
+//   });
+//   return response.json();
+// }
 
 </script>
 
 <template>
+  <NuxtLoadingIndicator />
   <div class="min-h-screen bg-gray-100 flex flex-col">
 
     <AppHeader />
     <div class="flex">
-      <aside class="bg-blue-200 min-w-48 rounded-lg w-auto sm:w-16">
+      <aside class="hidden sm:block sm:min-w-48 rounded-lg w-auto sm:w-16">
         <ChatList></ChatList>
       </aside>
-      <main class=" flex-grow mx-auto w-full p-4 flex flex-col">
-        <!--
-        <NBModal>
-          <ApiKeyManager />
-        </NModal>
-        -->
-        <!--  <NBButton icon="i-gg-key" class="btn" text="API Key Manager" /> -->
-        <ChatQuickStart />
+      <main class="flex-grow mx-auto w-full p-4 flex flex-col ">
+        <ChatHeader />
+        <ChatQuickStart v-if="showQuickstart" v-auto-animate />
         <Chat />
+        {{ currentChat }}
         <Debug class="w-full" />
       </main>
     </div>

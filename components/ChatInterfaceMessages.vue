@@ -6,16 +6,13 @@ const props = defineProps<{
 
 <template>
   <div>
-    <div v-for="message in messages" :key="message.id" class="mb-2">
-      <div :class="[
-        'p-2 rounded-lg prose',
-        message.role === 'user' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'
-      ]">
-        <template v-if="message.file">
-          <img :src="message.file" alt="Uploaded image" class="max-w-full h-auto mb-2" />
-        </template>
-        {{ message.content }}
-      </div>
-    </div>
+    <ul v-for="m in messages" :key="m.id" class="whitespace-pre-wrap p-2 flex-col overflow-y-auto" v-auto-animate>
+      <li class=" rounded-lg px-2 mb-2 prose"
+        :class="{ 'bg-blue-100 text-blue-800 ml-8': m.role === 'user', 'bg-white text-gray-800 mr-8': m.role !== 'user' }">
+        <span class="uppercase text-xs font-semibold">{{ m.role === 'user' ? 'User: ' : 'AI: ' }}</span>
+        <p>{{ m.content }}</p>
+      </li>
+
+    </ul>
   </div>
 </template>

@@ -14,7 +14,7 @@ const apiKeyStore =  storeToRefs(useApiKeyStore())
 </script>
 
 <template>
-  <div class="absolute inset-x-0 bottom-0 bg-gray-100 p-4 flex justify-between items-center border border-1 bg-white rounded-t-lg">
+  <div class="absolute inset-x-0 bottom-0 bg-gray-100 p-4 flex justify-between items-center border border-1 bg-white rounded-t-lg z-100">
     <div v-if="showDebug">
       <p>
         <span class="font-bold">Chats:</span>

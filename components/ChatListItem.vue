@@ -7,8 +7,8 @@ const chatStore = useChatStore();
 </script>
 <template>
   <li class="mb-2 list-none w-full">
-    <button class="bg-none border-none border-b border-gray-300 hover:border-gray-400 p-2 w-full" :class="{
-      'bg-blue-100': props.chat.id === chatStore.currentChatId, 'hover:bg-gray-200': chat.id !==
+    <button class="bg-none border-b border-b-gray-300 hover:border-gray-400 p-2 w-full rounded-r-lg" :class="{
+      'bg-gray-200': props.chat.id === chatStore.currentChatId, 'hover:bg-gray-100': chat.id !==
         chatStore.currentChatId
     }">
       <div>{{ chat.name }}</div>

@@ -2,6 +2,14 @@ import { defineStore } from "pinia";
 import { useApiKeyStore } from "./apiKeys";
 import { useLocalStorage, useStorage } from "@vueuse/core";
 
+interface Chat {
+  id: string;
+  name: string;
+  messages: Message[];
+  provider: string;
+  model: string;
+}
+
 function generateUUID() {
   return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
     var r = (Math.random() * 16) | 0,
@@ -13,13 +21,14 @@ function generateUUID() {
 export const useChatStore = defineStore("chat", {
   state: () => ({
     chats: useStorage("chats", []),
-    currentChatId: useStorage("currentChatId", null),
+    currentChatId: useStorage("currentChatId", ""),
     selectedProvider: "openai",
     selectedModel: "gpt-3.5-turbo",
   }),
   getters: {
     currentChat: (state) =>
       state.chats.find((chat) => chat.id === state.currentChatId),
+    currentMessages: (state): Message[] => state.currentChat?.messages || [],
   },
   actions: {
     createNewChat() {
@@ -35,6 +44,12 @@ export const useChatStore = defineStore("chat", {
     },
     setCurrentChat(chatId) {
       this.currentChatId = chatId;
+    },
+    addMessage(message: Message) {
+      if (!this.currentChat) {
+        this.createNewChat();
+      }
+      this.currentChat?.messages.push(message);
     },
     async nameChat(chatId, name) {},
     async sendMessage(content, provider, model, file = null) {

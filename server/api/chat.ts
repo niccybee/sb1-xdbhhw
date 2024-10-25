@@ -1,6 +1,7 @@
 import { streamText, convertToCoreMessages } from "ai";
 import { createOpenAI } from "@ai-sdk/openai";
 import { createAnthropic } from "@ai-sdk/anthropic";
+import { useChatStore } from "../stores/chat";
 
 export default defineLazyEventHandler(async () => {
   const apiKey = useRuntimeConfig().openaiApiKey;
@@ -15,11 +16,13 @@ export default defineLazyEventHandler(async () => {
     apiKey: apiKey,
   });
 
+  // function defineModel(model: string) {}
+
   return defineEventHandler(async (event: any) => {
-    const { messages, model, provider } = await readBody(event);
+    const { messages, model } = await readBody(event);
 
     const result = await streamText({
-      model: openai("gpt-4-turbo"),
+      model: model || openai("gpt-4-turbo"),
       messages: convertToCoreMessages(messages),
     });
 

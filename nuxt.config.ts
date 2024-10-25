@@ -2,7 +2,7 @@
 export default defineNuxtConfig({
   compatibilityDate: "2024-04-03",
   devtools: { enabled: false },
-  modules: ["@pinia/nuxt", "@unocss/nuxt"],
+  modules: ["@pinia/nuxt", "@unocss/nuxt", "@formkit/auto-animate/nuxt"],
   unocss: {
     // UnoCSS options
   },
@@ -11,4 +11,5 @@ export default defineNuxtConfig({
     openaiApiKey: process.env.OPENAI_API_KEY,
     anthropicApiKey: process.env.ANTHROPIC_API_KEY,
   },
+  components: ["~/components", "~/components/ui"],
 });
