@@ -1,6 +1,13 @@
 <script setup lang="ts">
 import { useChat } from '@ai-sdk/vue';
-import { useChatStore } from '../stores/chat';
+import { useChatStore, generateUUID } from '../stores/chat';
+
+interface Message {
+  id: string;
+  role: "user" | "assistant" | "system";
+  content: string;
+  file?: File | null;
+}
 
 const chatStore = useChatStore();
 const { currentMessages } = storeToRefs(chatStore);
@@ -9,7 +16,7 @@ const fileInput = ref(null);
 
 const supportsFileUpload = computed(() => true);
 
-const { messages, input, handleSubmit } = useChat({
+const { messages, input, handleSubmit, isLoading } = useChat({
   initialMessages: currentMessages.value,
   onResponse(response) {
     // Handle successful response
@@ -20,27 +27,45 @@ const { messages, input, handleSubmit } = useChat({
   }
 });
 
+const sendMessage = () => {
+  if (input.value.trim() === '') return;
+
+  chatStore.addMessage({
+    id: generateUUID(),
+    role: 'user',
+    content: input
+  });
+
+  handleSubmit();
+
+}
+const loading = ref(true)
+
+onMounted(() => {
+  loading.value = false;
+})
 
 </script>
 
 <template>
   <NBCard>
-
-
-
     <div class="flex flex-col w-full ">
 
-      <ChatInterfaceMessages :messages="currentMessages"></ChatInterfaceMessages>
+      <ChatInterfaceMessages :messages="messages" :loading="isLoading" />
 
       <!-- <div class="rounded-lg p-1 hover:gradient transition-all duration-200 cursor-pointer" @click="enterChat"> -->
-      <form @submit="handleSubmit" class="border-1 bg-white border-gray-300 rounded-lg p-4">
+      <form @submit.prevent="handleSubmit" class="border-1 bg-white border-gray-300 rounded-lg p-4"
+        :class="chatStore.currentMessages.length > 0 ? 'fixed bottom-2 inset-x-1 w-full' : ''">
         <ChatInterfaceOptions />
-        <div><input ref="chatInput" class="w-full rounded-lg border-1 border-gray-1 mb-1" v-model="input"
-            placeholder="Say something..." />
+
+        <div><input :disabled="loading" ref="chatInput" class="w-full rounded-lg border-1 border-gray-1 mb-1"
+            v-model="input" :placeholder="loading ? 'Loading...' : 'Say something...'" />
         </div>
+
         <div class="flex justify-between mt-1">
           <button @click="$refs.fileInput.click()" class="btn flex items-center hover:bg-gray-200"
             :disabled="!supportsFileUpload">
+
             <div class="i-gg-attachment pr-1"></div>
             <p>Add Attachment</p>
           </button>

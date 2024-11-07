@@ -1,47 +1,62 @@
 import { defineStore } from "pinia";
 import { useLocalStorage, useStorage } from "@vueuse/core";
+import { useChatStore } from "~/stores/chat";
+
+const chat = useChatStore();
+
+interface Key {
+  provider: string;
+  key: string;
+}
 
 export const useApiKeyStore = defineStore("apiKeys", {
   state: () => ({
-    keys: useStorage("keys", []),
-    apiKey: null,
-    showKeyManager: false,
+    keys: useStorage<Key[]>("keys", []),
+    apiKey: useStorage<Key>("apiKey", { provider: "", key: "" }),
   }),
   getters: {
-    hasApiKey: (state) => !!state.apiKey,
+    activeApiKey: (state) => {
+      if (!chat.currentChat) return "";
+      chat.currentChat.value.provider = state.keys[0].provider;
+    },
+    hasApiKey: (state) => !!state.apiKey.key,
   },
   actions: {
-    async testApiKey(key, provider) {
-      const providerName = provider.toLowerCase();
-      const url =
-        providerName === "openai"
-          ? "/api/openai/test"
-          : providerName === "anthropic"
-            ? "/api/anthropic/test"
-            : console.error("Invalid provider");
-
-      try {
-        const response = await fetch(url, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${key}`,
-          },
-        });
-        if (response.ok) {
-          return true;
-        } else {
-          throw new Error("Invalid API key");
-        }
-      } catch (error) {
-        console.error("Error testing API key:", error);
-        throw error;
-      } finally {
-        console.error("Provided API key is valid");
-      }
+    addNewKey(key: Key) {
+      this.keys.push(key);
     },
-    setApiKey(key) {
+    setApiKey(key: Key) {
       let newKey = key;
       this.apiKey = newKey;
     },
   },
 });
+
+// async testApiKey(key, provider) {
+//   const providerName = provider.toLowerCase();
+//   const url =
+//     providerName === "openai"
+//       ? "/api/openai/test"
+//       : providerName === "anthropic"
+//         ? "/api/anthropic/test"
+//         : console.error("Invalid provider");
+
+//   try {
+//     const response = await fetch(url, {
+//       method: "GET",
+//       headers: {
+//         Authorization: `Bearer ${key}`,
+//       },
+//     });
+//     if (response.ok) {
+//       return true;
+//     } else {
+//       throw new Error("Invalid API key");
+//     }
+//   } catch (error) {
+//     console.error("Error testing API key:", error);
+//     throw error;
+//   } finally {
+//     console.error("Provided API key is valid");
+//   }
+// },

@@ -31,22 +31,9 @@ onMounted(() => {
 
 <template>
   <NuxtLoadingIndicator />
-  <div class="min-h-screen bg-gray-100 flex flex-col">
-
-    <AppHeader />
-    <div class="flex">
-      <aside class="hidden sm:block sm:min-w-48 rounded-lg w-auto sm:w-16">
-        <ChatList></ChatList>
-      </aside>
-      <main class="flex-grow mx-auto w-full p-4 flex flex-col ">
-        <ChatHeader />
-        <ChatQuickStart v-if="showQuickstart" v-auto-animate />
-        <Chat />
-        {{ currentChat }}
-        <Debug class="w-full" />
-      </main>
-    </div>
-  </div>
+  <NuxtLayout>
+    <NuxtPage />
+  </NuxtLayout>
 </template>
 
 <style>
@@ -54,5 +41,24 @@ body {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   padding: 0;
   margin: 0;
+}
+
+input[type="color"],
+input[type="date"],
+input[type="datetime"],
+input[type="datetime-local"],
+input[type="email"],
+input[type="month"],
+input[type="number"],
+input[type="password"],
+input[type="search"],
+input[type="tel"],
+input[type="text"],
+input[type="time"],
+input[type="url"],
+input[type="week"],
+select:focus,
+textarea {
+  font-size: 16px;
 }
 </style>

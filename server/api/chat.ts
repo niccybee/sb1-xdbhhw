@@ -3,6 +3,7 @@ import { createOpenAI } from "@ai-sdk/openai";
 import { createAnthropic } from "@ai-sdk/anthropic";
 import { useChatStore } from "../stores/chat";
 
+
 export default defineLazyEventHandler(async () => {
   const apiKey = useRuntimeConfig().openaiApiKey;
 
@@ -16,7 +17,7 @@ export default defineLazyEventHandler(async () => {
     apiKey: apiKey,
   });
 
-  // function defineModel(model: string) {}
+
 
   return defineEventHandler(async (event: any) => {
     const { messages, model } = await readBody(event);

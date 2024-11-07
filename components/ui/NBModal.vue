@@ -7,6 +7,7 @@ const closeModal = () => {
   model.value = false;
 };
 
+
 </script>
 <template>
   <div>

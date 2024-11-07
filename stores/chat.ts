@@ -1,6 +1,12 @@
 import { defineStore } from "pinia";
-import { useApiKeyStore } from "./apiKeys";
-import { useLocalStorage, useStorage } from "@vueuse/core";
+import { useStorage } from "@vueuse/core";
+
+interface Message {
+  id: string;
+  role: "user" | "assistant" | "system";
+  content: string;
+  file?: File | null;
+}
 
 interface Chat {
   id: string;
@@ -10,7 +16,7 @@ interface Chat {
   model: string;
 }
 
-function generateUUID() {
+export function generateUUID() {
   return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
     var r = (Math.random() * 16) | 0,
       v = c == "x" ? r : (r & 0x3) | 0x8;
@@ -49,39 +55,22 @@ export const useChatStore = defineStore("chat", {
       if (!this.currentChat) {
         this.createNewChat();
       }
+      if (this.currentChat.messages.length === 1) {
+        this.nameChat();
+      }
       this.currentChat?.messages.push(message);
     },
-    async nameChat(chatId, name) {},
-    async sendMessage(content, provider, model, file = null) {
-      if (!this.currentChat) {
-        this.createNewChat();
+    async nameChat() {
+      if (this.currentChat) {
+        this.currentChat.name = this.currentChat.messages[0].content.splice(
+          0,
+          30,
+        );
       }
-
-      this.currentChat.messages.push({
-        id: generateUUID(),
-        role: "user",
-        content,
-        file,
-      });
-
-      const apiKeyStore = useApiKeyStore();
-
-      try {
-        const response = await $fetch("/api/chat", {
-          method: "POST",
-          body: { message: content, provider, model, file },
-          apiKey: apiKeyStore.apiKey,
-        });
-
-        this.currentChat.messages.push({
-          id: generateUUID(),
-          role: "assistant",
-          content: response.message,
-        });
-      } catch (error) {
-        console.error("Error sending message:", error);
-        // Handle error (e.g., show error message to user)
-      }
+    },
+    async removeChat(id) {
+      const index = this.chats.findIndex((chat) => chat.id === id);
+      this.chats.splice(index, 1);
     },
   },
 });
