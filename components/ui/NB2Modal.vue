@@ -54,7 +54,6 @@ onMounted(() => {
 
             <!-- Content -->
             <div class="p-4">
-              Test Content
               <slot></slot>
             </div>
 

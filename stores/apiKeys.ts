@@ -20,14 +20,19 @@ export const useApiKeyStore = defineStore("apiKeys", {
       chat.currentChat.value.provider = state.keys[0].provider;
     },
     hasApiKey: (state) => !!state.apiKey.key,
+    mostRecentOpenAIKey: (state) => state.keys.find((k) => k.provider === "openai"),
   },
   actions: {
     addNewKey(key: Key) {
+      let id = this.keys.length;
       this.keys.push(key);
     },
     setApiKey(key: Key) {
       let newKey = key;
       this.apiKey = newKey;
+    },
+    removeApiKey(key: Key) {
+      this.keys = this.keys.filter((k) => k.key !== key.key);
     },
   },
 });

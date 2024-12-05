@@ -4,36 +4,28 @@ export const useUIStore = defineStore("ui", () => {
   const showDebug = ref(false);
   const showSettings = ref(false);
   const showHelp = ref(false);
+  // new section
+  const hideIntroHeader = ref(false);
+  const hideQuickStartAction = ref(false);
+  const engagedMessageMode = ref(false);
+  const hideSidebar = ref(false);
+  // settings
+  const theme = ref("light");
 
-  // const showSettingsModal = () => {
-  //   showSettings.value = true;
-  // };
-  // const hideSettingsModal = () => {
-  //   showSettings.value = false;
-  // };
-  // const showHelpModal = () => {
-  //   showHelp.value = true;
-  // };
-  // const hideHelpModal = () => {
-  //   showHelp.value = false;
-  // };
-  // const showKeyManagerModal = () => {
-  //   showKeyManager.value = true;
-  // };
-  // const hideKeyManagerModal = () => {
-  //   showKeyManager.value = false;
-  // };
-  // const showDebugModal = () => {
-  //   showDebug.value = true;
-  // };
-  // const hideDebugModal = () => {
-  //   showDebug.value = false;
-  // };
+  const smallSidebar = computed(() => {
+    return hideSidebar.value || engagedMessageMode.value;
+  });
 
   return {
     showKeyManager,
     showDebug,
     showSettings,
     showHelp,
+    hideQuickStartAction,
+    hideIntroHeader,
+    hideSidebar,
+    smallSidebar,
+    engagedMessageMode,
+    theme,
   };
 });

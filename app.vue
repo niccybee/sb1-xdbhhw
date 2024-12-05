@@ -1,31 +1,9 @@
-<script setup>
+<script setup lang="ts">
 import { useKeyboard } from './composables/initKeyboard'
-import { useChatStore } from './stores/chat'
-import { storeToRefs } from 'pinia'
-const chatStore = useChatStore()
-const { currentChat } = storeToRefs(chatStore);
-
-
-const showQuickstart = computed(() => {
-  if (currentChat) {
-    console.log('current chat progress: ', currentChat.value)
-    return false
-    // return currentChat.value.messages.length > 0 ? true : false;
-  } else {
-    true
-  }
-})
 
 onMounted(() => {
   useKeyboard()
 })
-
-// const getOpenAIModels = async () => {
-//   const response = await fetch('https://api.openai.com/v1/models', {
-//     Authorization: 'Bearer ' + apiKey.value
-//   });
-//   return response.json();
-// }
 
 </script>
 

@@ -1,0 +1,46 @@
+--> npm install
+npm error code ERESOLVE
+npm error ERESOLVE could not resolve
+npm error
+npm error While resolving: nuxt-ai-chat-app@undefined
+npm error Found: vue@3.5.13
+npm error node_modules/vue
+npm error   peer vue@"3.5.13" from @vue/server-renderer@3.5.13
+npm error   node_modules/@vue/server-renderer
+npm error     @vue/server-renderer@"3.5.13" from vue@3.5.13
+npm error   peer vue@"^3.4.37" from vue-flow-layout@0.1.1
+npm error   node_modules/vue-flow-layout
+npm error     vue-flow-layout@"^0.1.1" from @unocss/inspector@0.65.0
+npm error     node_modules/@unocss/inspector
+npm error       @unocss/inspector@"0.65.0" from @unocss/vite@0.65.0
+npm error       node_modules/@unocss/vite
+npm error         @unocss/vite@"0.65.0" from @unocss/astro@0.65.0
+npm error         node_modules/@unocss/astro
+npm error         1 more (unocss)
+npm error   2 more (@ai-sdk/vue, nuxt)
+npm error
+npm error Could not resolve dependency:
+npm error pinia@"^2.1.7" from the root project
+npm error
+npm error Conflicting peer dependency: vue@2.6.14
+npm error node_modules/vue
+npm error   peer vue@">= 2.5 < 2.7" from @vue/composition-api@1.7.2
+npm error   node_modules/@vue/composition-api
+npm error     peerOptional @vue/composition-api@"^1.4.0" from pinia@2.2.8
+npm error     node_modules/pinia
+npm error       pinia@"^2.1.7" from the root project
+npm error
+npm error Fix the upstream dependency conflict, or retry
+npm error this command with --force or --legacy-peer-deps
+npm error to accept an incorrect (and potentially broken) dependency resolution.
+npm error
+npm error
+npm error For a full report see:
+npm error /home/runner/.npm/_logs/2024-12-03T20_02_56_461Z-eresolve-report.txt
+npm notice
+npm notice New minor version of npm available! 10.8.1 -> 10.9.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v10.9.1
+npm notice To update run: npm install -g npm@10.9.1
+npm notice
+npm error A complete log of this run can be found in: /home/runner/.npm/_logs/2024-12-03T20_02_56_461Z-debug-0.log
+exit status 1

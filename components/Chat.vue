@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import { useChat } from '@ai-sdk/vue';
 import { useChatStore, generateUUID } from '../stores/chat';
+import { useFileDialog } from '@vueuse/core'
+
+const chatForm = ref(null)
+const chats = useChatStore();
+const ui = useUIStore();
+const { currentMessages } = storeToRefs(chats);
 
 interface Message {
   id: string;
@@ -8,9 +14,6 @@ interface Message {
   content: string;
   file?: File | null;
 }
-
-const chatStore = useChatStore();
-const { currentMessages } = storeToRefs(chatStore);
 
 const fileInput = ref(null);
 
@@ -22,60 +25,51 @@ const { messages, input, handleSubmit, isLoading } = useChat({
     // Handle successful response
     console.log('AI response received:', response)
   },
-  onFinish: (message) => {
-    chatStore.addMessage(message);
+  onFinish: (message: Message) => {
+    chats.addMessage(message);
   }
 });
 
-const sendMessage = () => {
-  if (input.value.trim() === '') return;
-
-  chatStore.addMessage({
-    id: generateUUID(),
-    role: 'user',
-    content: input
-  });
-
-  handleSubmit();
-
-}
 const loading = ref(true)
 
 onMounted(() => {
   loading.value = false;
 })
 
+const lockMessageBottom = computed(() => {
+  if (ui.engagedMessageMode || chats.currentMessages.length > 0) return true
+
+})
+
 </script>
 
 <template>
-  <NBCard>
-    <div class="flex flex-col w-full ">
+  <!--  <NBCard> -->
+  <div class="">
 
-      <ChatInterfaceMessages :messages="messages" :loading="isLoading" />
+    <ChatMessages :messages="messages" :loading="isLoading"
+      :class="lockMessageBottom ? 'mb-64 h-full' : 'h-auto'">
+    </ChatMessages>
 
-      <!-- <div class="rounded-lg p-1 hover:gradient transition-all duration-200 cursor-pointer" @click="enterChat"> -->
-      <form @submit.prevent="handleSubmit" class="border-1 bg-white border-gray-300 rounded-lg p-4"
-        :class="chatStore.currentMessages.length > 0 ? 'fixed bottom-2 inset-x-1 w-full' : ''">
-        <ChatInterfaceOptions />
+    <form @submit.prevent="handleSubmit" class="border-1 bg-white border-gray-300 rounded-lg p-4 " ref="chatForm"
+      :class="lockMessageBottom ? 'fixed bottom-2 inset-x-1 w-full' : 'relative'">
+      <p class="absolute text-xs text-gray-500 top-2 right-2"></p>
+      <ChatInterfaceOptions />
 
-        <div><input :disabled="loading" ref="chatInput" class="w-full rounded-lg border-1 border-gray-1 mb-1"
-            v-model="input" :placeholder="loading ? 'Loading...' : 'Say something...'" />
-        </div>
+      <div><input :disabled="loading" ref="chatInput" class="w-full rounded-lg border-1 border-gray-1 mb-1"
+          v-model="input" :placeholder="loading ? 'Loading...' : 'Say something...'" />
+      </div>
 
-        <div class="flex justify-between mt-1">
-          <button @click="$refs.fileInput.click()" class="btn flex items-center hover:bg-gray-200"
-            :disabled="!supportsFileUpload">
+      <div class="flex justify-between mt-1">
 
-            <div class="i-gg-attachment pr-1"></div>
-            <p>Add Attachment</p>
-          </button>
+        <ChatInterfaceFile :supports="supportsFileUpload" />
 
-          <NBButton type="submit" icon="i-gg-chevron-right"
-            buttonType="flex items-center justify-center gradient text-white hover:bg-blue-600 transition duration-200"
-            text="Send" />
-        </div>
-      </form>
-      <!-- </div> -->
-    </div>
-  </NBCard>
+        <NBButton type="submit" icon="i-gg-chevron-right"
+          buttonType="flex items-center justify-center gradient text-white hover:bg-blue-600 transition duration-200"
+          text="Send" />
+      </div>
+    </form>
+
+  </div>
+  <!-- </NBCard> -->
 </template>

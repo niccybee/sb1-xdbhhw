@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { useChatStore } from '~/stores/chat';
-const chatStore = useChatStore();
+import { useUIStore } from '~/stores/ui'
+
+const ui = useUIStore();
 
 const quickStarts = [
   { id: 0, title: 'GPT-4 Messages', content: 'GPT-4 is a powerful language model that can generate high-quality text based on a given prompt.', provider: 'openai', model: 'gpt-4', icon: 'i-gg-comment' },
@@ -11,7 +12,9 @@ const quickStarts = [
 </script>
 
 <template>
-  <div class="py-4 w-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+  <div class="py-4 w-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 relative">
+    <p class="absolute top-0 right-0 text-xs text-gray-400"><button @click="ui.hideQuickStartAction = true"
+        class="hover:underline">Hide</button></p>
     <NBCard v-for="start in quickStarts"
       class="card card-dashboard p-2  border-1 border-gray-300 flex flex-col justify-between" :key="start.id">
       <div class="prose ">

@@ -1,4 +1,9 @@
-import { defineConfig, presetIcons, presetTypography } from "unocss";
+import {
+  defineConfig,
+  presetIcons,
+  presetTypography,
+  presetAttributify,
+} from "unocss";
 import presetUno from "@unocss/preset-uno";
 import { presetForms } from "@julr/unocss-preset-forms";
 
@@ -14,6 +19,7 @@ export default defineConfig({
     presetForms({
       strategy: "base",
     }),
+    presetAttributify(),
   ],
   // Add any custom rules or shortcuts here
   shortcuts: [
