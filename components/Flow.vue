@@ -1,126 +1,119 @@
+
 <script setup>
 import { ref } from 'vue'
 import { VueFlow, useVueFlow } from '@vue-flow/core'
 import { Background } from '@vue-flow/background'
 import { ControlButton, Controls } from '@vue-flow/controls'
 import { MiniMap } from '@vue-flow/minimap'
-import { initialEdges, initialNodes } from './initial-elements.js'
 import FlowIcon from './FlowIcon.vue'
+import { useFlowsStore } from '~/stores/flows'
 
-// Props
 const props = defineProps({
-  open: {
-    type: Boolean,
-    default: false
+  flowId: {
+    type: String,
+    required: true
   }
 })
 
-/**
- * useVueFlow provides all event handlers and store properties
- * You can pass the composable an object that has the same properties as the VueFlow component props
- */
-const { onPaneReady, onNodeDragStop, onConnect, addEdges, setViewport, toObject } = useVueFlow()
+const flows = useFlowsStore()
+const { onPaneReady, onNodeDragStop, onConnect, addEdges } = useVueFlow()
 
-const nodes = ref(initialNodes)
-
-const edges = ref(initialEdges)
-
-// our dark mode toggle flag
+const nodes = ref([])
+const edges = ref([])
 const dark = ref(false)
 
-/**
- * This is a Vue Flow event-hook which can be listened to from anywhere you call the composable, instead of only on the main component
- * Any event that is available as `@event-name` on the VueFlow component is also available as `onEventName` on the composable and vice versa
- *
- * onPaneReady is called when viewpane & nodes have visible dimensions
- */
+const addAINode = () => {
+  const newNode = {
+    id: `ai-${Date.now()}`,
+    type: 'ai',
+    position: { x: 100, y: 100 },
+    data: {
+      prompt: '',
+      model: 'gpt-3.5-turbo',
+      outputKey: 'aiOutput'
+    },
+    connections: []
+  }
+  flows.addNode(newNode)
+  nodes.value.push(newNode)
+}
+
+const addJSONNode = () => {
+  const newNode = {
+    id: `json-${Date.now()}`,
+    type: 'json',
+    position: { x: 300, y: 100 },
+    data: {
+      input: '',
+      operation: 'parse',
+      outputKey: 'jsonOutput'
+    },
+    connections: []
+  }
+  flows.addNode(newNode)
+  nodes.value.push(newNode)
+}
+
+const executeFlow = async () => {
+  const result = await flows.executeFlow(props.flowId)
+  console.log('Flow execution result:', result)
+}
+
 onPaneReady(({ fitView }) => {
   fitView()
 })
 
-/**
- * onNodeDragStop is called when a node is done being dragged
- *
- * Node drag events provide you with:
- * 1. the event object
- * 2. the nodes array (if multiple nodes are dragged)
- * 3. the node that initiated the drag
- * 4. any intersections with other nodes
- */
-onNodeDragStop(({ event, nodes, node, intersections }) => {
-  console.log('Node Drag Stop', { event, nodes, node, intersections })
+onNodeDragStop(({ node }) => {
+  flows.updateNodePosition(node.id, node.position)
 })
 
-/**
- * onConnect is called when a new connection is created.
- *
- * You can add additional properties to your new edge (like a type or label) or block the creation altogether by not calling `addEdges`
- */
 onConnect((connection) => {
+  flows.connectNodes(connection.source, connection.target)
   addEdges(connection)
 })
-
-/**
- * To update a node or multiple nodes, you can
- * 1. Mutate the node objects *if* you're using `v-model`
- * 2. Use the `updateNode` method (from `useVueFlow`) to update the node(s)
- * 3. Create a new array of nodes and pass it to the `nodes` ref
- */
-function updatePos() {
-  nodes.value = nodes.value.map((node) => {
-    return {
-      ...node,
-      position: {
-        x: Math.random() * 400,
-        y: Math.random() * 400,
-      },
-    }
-  })
-}
-
-/**
- * toObject transforms your current graph data to an easily persist-able object
- */
-function logToObject() {
-  console.log(toObject())
-}
-
-/**
- * Resets the current viewport transformation (zoom & pan)
- */
-function resetTransform() {
-  setViewport({ x: 0, y: 0, zoom: 1 })
-}
-
-function toggleDarkMode() {
-  dark.value = !dark.value
-}
 </script>
 
 <template>
-  <VueFlow :nodes="nodes" :edges="edges" :class="{ dark }" class="basicflow" :default-viewport="{ zoom: 1.5 }"
-    :min-zoom="0.2" :max-zoom="4">
-    <Background pattern-color="#aaa" :gap="16" />
-
-    <MiniMap />
-
-    <Controls position="top-right">
-      <ControlButton title="Reset Transform" @click="resetTransform">
-        <FlowIcon name="reset" />
-      </ControlButton>
-
-      <ControlButton title="Shuffle Node Positions" @click="updatePos">
-        <FlowIcon name="update" />
-      </ControlButton>
-
-      <ControlButton title="Toggle Dark Mode" @click="toggleDarkMode">
-        <FlowIcon v-if="dark" name="sun" />
-        <FlowIcon v-else name="moon" />
-      </ControlButton>
-
-      <ControlButton title="Log `toObject`" @click="logToObject">
-        <FlowIcon name="log" />
-      </ControlButton>
-    </Controls>
-  </VueFlow>
+  <div class="flow-container">
+    <div class="toolbar">
+      <button @click="addAINode" class="btn">Add AI Node</button>
+      <button @click="addJSONNode" class="btn">Add JSON Node</button>
+      <button @click="executeFlow" class="btn primary">Execute Flow</button>
+    </div>
+    
+    <VueFlow v-model="nodes" v-model:edges="edges" :class="{ dark }" class="basicflow" 
+      :default-viewport="{ zoom: 1.5 }" :min-zoom="0.2" :max-zoom="4">
+      <Background pattern-color="#aaa" :gap="16" />
+      <MiniMap />
+      <Controls />
+    </VueFlow>
+  </div>
 </template>
+
+<style>
+.flow-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.toolbar {
+  padding: 1rem;
+  display: flex;
+  gap: 1rem;
+}
+
+.btn {
+  padding: 0.5rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn.primary {
+  background: #00DC82;
+  color: white;
+  border: none;
+}
+</style>

@@ -1,10 +1,8 @@
 import { useStorage } from "@vueuse/core";
 import { generateSlug } from "@/utils/genSlug";
-interface FlowNode {
-  id: string;
-  type: "ai" | "conditional" | "json";
-  position: { x: number; y: number };
-  data: any;
+import type { FlowNodeType, FlowExecution, AINodeData, JSONNodeData } from '~/types/flowTypes';
+
+interface FlowNode extends FlowNodeType {
   connections: string[];
 }
 
@@ -63,6 +61,74 @@ export const useFlowsStore = defineStore("flows", {
     },
     connectNodes(sourceId: string, targetId: string) {
       if (!this.currentFlow) return;
+
+    async executeFlow(flowId: string) {
+      const flow = this.flows.find(f => f.id === flowId);
+      if (!flow) return;
+      
+      const execution: FlowExecution = {
+        nodeResults: new Map(),
+        currentNodeId: flow.nodes[0]?.id,
+        status: 'running'
+      };
+
+      for (const node of flow.nodes) {
+        try {
+          const result = await this.executeNode(node, execution);
+          execution.nodeResults.set(node.id, result);
+          execution.currentNodeId = node.connections[0];
+        } catch (error) {
+          execution.status = 'error';
+          console.error(`Error executing node ${node.id}:`, error);
+          break;
+        }
+      }
+      
+      execution.status = 'completed';
+      return execution;
+    },
+
+    async executeNode(node: FlowNode, execution: FlowExecution) {
+      switch (node.type) {
+        case 'ai':
+          return await this.executeAINode(node.data as AINodeData, execution);
+        case 'json':
+          return await this.executeJSONNode(node.data as JSONNodeData, execution);
+        default:
+          throw new Error(`Unknown node type: ${node.type}`);
+      }
+    },
+
+    async executeAINode(data: AINodeData, execution: FlowExecution) {
+      const response = await $fetch('/api/chat', {
+        method: 'POST',
+        body: {
+          messages: [
+            ...(data.systemPrompt ? [{role: 'system', content: data.systemPrompt}] : []),
+            {role: 'user', content: data.prompt}
+          ],
+          model: data.model
+        }
+      });
+      return response;
+    },
+
+    executeJSONNode(data: JSONNodeData, execution: FlowExecution) {
+      const input = execution.nodeResults.get(data.input);
+      switch (data.operation) {
+        case 'parse':
+          return JSON.parse(input);
+        case 'stringify':
+          return JSON.stringify(input);
+        case 'transform':
+          if (data.transformRule) {
+            const transform = new Function('data', `return ${data.transformRule}`);
+            return transform(input);
+          }
+          return input;
+      }
+    }
+
       const sourceNode = this.currentFlow.nodes.find((n) => n.id === sourceId);
       if (sourceNode) {
         sourceNode.connections.push(targetId);
