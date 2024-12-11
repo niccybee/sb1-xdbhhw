@@ -7,9 +7,11 @@ import { ControlButton, Controls } from '@vue-flow/controls'
 import { MiniMap } from '@vue-flow/minimap'
 import FlowIcon from './FlowIcon.vue'
 import AINode from './nodes/AINode.vue'
+import JSONNode from './nodes/JSONNode.vue'
 
 const nodeTypes = {
-  ai: AINode
+  ai: AINode,
+  json: JSONNode
 }
 import { useFlowsStore } from '~/stores/flows'
 
@@ -51,7 +53,8 @@ const addJSONNode = () => {
     data: {
       input: '',
       operation: 'parse',
-      outputKey: 'jsonOutput'
+      outputKey: 'jsonOutput',
+      transformRule: ''
     },
     connections: []
   }
