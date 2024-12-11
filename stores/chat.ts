@@ -53,7 +53,9 @@ export const useChatStore = defineStore("chat", {
       this.currentChatId = newChat.id;
     },
     setCurrentChat(chatId) {
-      this.currentChatId = chatId;
+      if (chatId !== this.currentChatId) {
+        this.currentChatId = chatId;
+      }
     },
     addMessage(message: Message) {
       if (!this.currentChat) {

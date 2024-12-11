@@ -21,6 +21,7 @@ const fileInput = ref(null);
 const supportsFileUpload = computed(() => true);
 
 const { messages, input, handleSubmit, isLoading, onFinish } = useChat({
+  id: computed(() => chats.currentChatId),
   initialMessages: currentMessages.value,
   onResponse(response) {
     // Handle successful response
@@ -29,8 +30,12 @@ const { messages, input, handleSubmit, isLoading, onFinish } = useChat({
   onFinish: (message, finishOptions) => {
     chats.addMessage(message);
   },
-
 });
+
+// Watch for chat changes and update messages
+watch(() => chats.currentChatId, () => {
+  messages.value = chats.currentMessages;
+}, { immediate: true });
 
 const submit = async () => {
   if (!input.trim()) return;
