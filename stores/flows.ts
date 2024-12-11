@@ -1,3 +1,4 @@
+
 import { useStorage } from "@vueuse/core";
 import { generateSlug } from "@/utils/genSlug";
 import type { FlowNodeType, FlowExecution, AINodeData, JSONNodeData } from '~/types/flowTypes';
@@ -61,7 +62,11 @@ export const useFlowsStore = defineStore("flows", {
     },
     connectNodes(sourceId: string, targetId: string) {
       if (!this.currentFlow) return;
-
+      const sourceNode = this.currentFlow.nodes.find((n) => n.id === sourceId);
+      if (sourceNode) {
+        sourceNode.connections.push(targetId);
+      }
+    },
     async executeFlow(flowId: string) {
       const flow = this.flows.find(f => f.id === flowId);
       if (!flow) return;
@@ -87,7 +92,6 @@ export const useFlowsStore = defineStore("flows", {
       execution.status = 'completed';
       return execution;
     },
-
     async executeNode(node: FlowNode, execution: FlowExecution) {
       switch (node.type) {
         case 'ai':
@@ -98,7 +102,6 @@ export const useFlowsStore = defineStore("flows", {
           throw new Error(`Unknown node type: ${node.type}`);
       }
     },
-
     async executeAINode(data: AINodeData, execution: FlowExecution) {
       const response = await $fetch('/api/chat', {
         method: 'POST',
@@ -112,7 +115,6 @@ export const useFlowsStore = defineStore("flows", {
       });
       return response;
     },
-
     executeJSONNode(data: JSONNodeData, execution: FlowExecution) {
       const input = execution.nodeResults.get(data.input);
       switch (data.operation) {
@@ -128,11 +130,5 @@ export const useFlowsStore = defineStore("flows", {
           return input;
       }
     }
-
-      const sourceNode = this.currentFlow.nodes.find((n) => n.id === sourceId);
-      if (sourceNode) {
-        sourceNode.connections.push(targetId);
-      }
-    },
   },
 });
