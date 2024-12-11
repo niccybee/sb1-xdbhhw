@@ -6,6 +6,11 @@ import { Background } from '@vue-flow/background'
 import { ControlButton, Controls } from '@vue-flow/controls'
 import { MiniMap } from '@vue-flow/minimap'
 import FlowIcon from './FlowIcon.vue'
+import AINode from './nodes/AINode.vue'
+
+const nodeTypes = {
+  ai: AINode
+}
 import { useFlowsStore } from '~/stores/flows'
 
 const props = defineProps({
@@ -82,7 +87,7 @@ onConnect((connection) => {
     </div>
     
     <VueFlow v-model="nodes" v-model:edges="edges" :class="{ dark }" class="basicflow" 
-      :default-viewport="{ zoom: 1.5 }" :min-zoom="0.2" :max-zoom="4">
+      :node-types="nodeTypes" :default-viewport="{ zoom: 1.5 }" :min-zoom="0.2" :max-zoom="4">
       <Background pattern-color="#aaa" :gap="16" />
       <MiniMap />
       <Controls />
