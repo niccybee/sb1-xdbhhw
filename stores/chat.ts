@@ -1,11 +1,13 @@
 import { defineStore } from "pinia";
 import { useStorage } from "@vueuse/core";
+import {generateText} from 'ai'
 
 interface Message {
   id: string;
   role: "user" | "assistant" | "system";
   content: string;
   file?: File | null;
+  created: Date;
 }
 
 interface Chat {
@@ -32,8 +34,9 @@ export const useChatStore = defineStore("chat", {
     selectedModel: "gpt-3.5-turbo",
   }),
   getters: {
-    currentChat: (state) =>
-      state.chats.find((chat) => chat.id === state.currentChatId),
+    currentChat: (state) => {
+      return state.chats.find((chat: Chat) => chat.id === state.currentChatId);
+    },
     currentMessages: (state): Message[] => state.currentChat?.messages || [],
   },
   actions: {
@@ -44,6 +47,7 @@ export const useChatStore = defineStore("chat", {
         messages: [],
         provider: this.selectedProvider,
         model: this.selectedModel,
+        usageTotal: 0,
       };
       this.chats.push(newChat);
       this.currentChatId = newChat.id;
@@ -68,9 +72,47 @@ export const useChatStore = defineStore("chat", {
         );
       }
     },
+    async sendMessage(message: Message) {
+      if (!this.currentChat) {
+        this.createNewChat();
+        
+      }
+      
+      
+      const userMessage: Message = {
+        id: generateUUID(),
+        role: "user",
+        content: message.content,
+        created: new Date(),
+      }
+
+      try {
+        // call chat api and return result
+        useFetch('api/chat', {
+          method: 'POST',
+          body: JSON.stringify({
+            messages: this.currentChat.messages,
+            provider: this.currentChat.provider,
+            model: this.currentChat.model,
+          }),
+        })
+      } catch (e) {
+        console.error("Error generating text", e);
+      } finally {
+        await this.nameChat()
+      }
+      
+    },
     async removeChat(id) {
       const index = this.chats.findIndex((chat) => chat.id === id);
       this.chats.splice(index, 1);
     },
+    async cleanChats() {
+      for (const chat of this.chats) {
+        if (chat.messages.length === 0) {
+          chat.messages = [];
+        }
+      }
+    }
   },
 });

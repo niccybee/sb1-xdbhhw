@@ -37,7 +37,7 @@ export default defineConfig({
         "rounded-full border-none bg-gray-100 px-2 py-1 focus:ring-2 focus:ring-blue-400",
       "modal-overlay":
         "fixed inset-0 z-10 bg-black opacity-50 transition-opacity duration-200",
-      modal: "fixed inset-0 z-10 bg-white rounded-lg shadow-lg",
+      modal: "fixed inset-y-0 z-10 bg-white rounded-lg shadow-lg",
       gradient: "bg-gradient-to-r from-blue-800 to-indigo-400 ",
       "gradient-text":
         "bg-gradient-to-r from-blue-800 via-green-500 to-indigo-400 text-transparent bg-clip-text",

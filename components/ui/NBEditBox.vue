@@ -24,8 +24,8 @@ const emits = defineEmits(['update:model'])
 </script>
 <template>
   <div v-if="!loading" class="flex items-center justify-between" v-auto-animate>
-    <p class="mr-2 min-w-48 h-8" v-if="!edit">{{ value }}</p>
-    <input class="mr-2 min-w-48 h-8" v-else type="text" v-model="value" />
+    <p class="mr-2 min-w-48 h-8" v-if="!edit">{{ model }}</p>
+    <input class="mr-2 min-w-48 h-8" v-else type="text" v-model="model" />
     <button @click="toggleEdit">
       <div v-if="!edit" class="i-gg-pen"></div>
       <div v-else class="i-gg-check-o"></div>

@@ -12,8 +12,22 @@ const props = defineProps({
   isVisible: {
     type: Boolean,
     default: true
+  },
+  scrollable: {
+    type: Boolean,
+    default: false
+  },
+  fullWidth: {
+    type: Boolean,
+    default: false
   }
 });
+
+const viewOptions = computed(() => {
+  const scroll = props.scrollable ? 'overflow-y-scroll' : '';
+  const width = props.fullWidth ? 'w-full' : 'w-full max-w-lg mx-auto';
+  return `${scroll} ${width}`
+})
 
 const emit = defineEmits(['close']);
 
@@ -41,8 +55,8 @@ onMounted(() => {
         <div v-if="loading" class="fixed inset-0 z-50 flex items-center justify-center p-4">
           <LoadSpinner />
         </div>
-        <div v-else class=" fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-auto" @click.stop>
+        <div v-else class=" fixed inset-0 z-50 flex items-center justify-center p-4 ">
+          <div class="bg-white rounded-lg shadow-xl w-full max-h-screen my-2 " :class="viewOptions" @click.stop>
             <!-- Header -->
             <div class="flex justify-between items-center p-4 border-b" v-if="title">
               <h3 class="text-lg font-semibold">{{ title }}</h3>

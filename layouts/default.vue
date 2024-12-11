@@ -1,4 +1,5 @@
 <template>
+  <NuxtLoadingIndicator></NuxtLoadingIndicator>
   <div class="min-h-screen bg-gray-100 app-layout">
     <AppHeader></AppHeader>
     <div class="block sm:flex">

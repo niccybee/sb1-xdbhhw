@@ -2,8 +2,6 @@ import { defineStore } from "pinia";
 import { useLocalStorage, useStorage } from "@vueuse/core";
 import { useChatStore } from "~/stores/chat";
 
-const chat = useChatStore();
-
 interface Key {
   provider: string;
   key: string;
@@ -16,11 +14,13 @@ export const useApiKeyStore = defineStore("apiKeys", {
   }),
   getters: {
     activeApiKey: (state) => {
+      const chat = useChatStore();
       if (!chat.currentChat) return "";
-      chat.currentChat.value.provider = state.keys[0].provider;
+      chat.currentChat.provider === state.keys[0].provider;
     },
     hasApiKey: (state) => !!state.apiKey.key,
-    mostRecentOpenAIKey: (state) => state.keys.find((k) => k.provider === "openai"),
+    mostRecentOpenAIKey: (state) =>
+      state.keys.find((k) => k.provider === "openai"),
   },
   actions: {
     addNewKey(key: Key) {

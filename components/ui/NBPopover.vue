@@ -9,15 +9,15 @@ const toggleOpen = () => {
 };
 
 let popover: HTMLElement | null = null;
-let button: HTMLButtonElement | null = null;
+let popButton: HTMLButtonElement | null = null;
 
 const updatePopoverPosition = () => {
-  if (popover && button) {
+  if (popover && popButton) {
     const {
       top,
       left,
       update: updateBounding
-    } = useElementBounding(button);
+    } = useElementBounding(popButton);
 
     updateBounding();
     popover.value.style.top = `${top}px`;
@@ -32,7 +32,7 @@ watch(() => windowWidth.value, updatePopoverPosition);
 </script>
 
 <template>
-  <button ref="button"
+  <button ref="popButton"
     class="flex items-center gap-2 rounded-md bg-gray-100 px-2 py-1 text-sm font-medium border-none hover:border-1 hover:border-gray-700 hover:bg-white transition transition-all duration-200"
     @click="toggleOpen">
     <div class="i-gg-more-vertical"></div>

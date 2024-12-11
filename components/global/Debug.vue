@@ -1,13 +1,10 @@
 <script setup lang="ts">
-import { storeToRefs } from 'pinia'
-import { useChatStore } from '../stores/chat'
-import { useApiKeyStore } from '../stores/apiKeys'
-
 const showDebug = ref(false)
 const props = defineProps(['data'])
 
-const chatStore = storeToRefs(useChatStore())
-const apiKeyStore = storeToRefs(useApiKeyStore())
+const chats = useChatStore()
+const keys = useApiKeyStore()
+const flows = useFlowsStore()
 
 
 </script>
@@ -16,10 +13,14 @@ const apiKeyStore = storeToRefs(useApiKeyStore())
   <div v-if="showDebug">
     <p>
       <span class="font-bold">Chats:</span>
-      <code>{{ chatStore }}</code>
+      <code>{{ chats }}</code>
+    </p>
+    <p>
+      <span class="font-bold">Flows:</span>
+      <code>{{ flows }}</code>
     </p>
     <span class="font-bold">Keys</span>
-    <p>{{ apiKeyStore }}</p>
+    <p>{{ keys }}</p>
 
     <p>
       <span class="font-bold">Data:</span>

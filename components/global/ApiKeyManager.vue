@@ -24,7 +24,7 @@ interface Key {
         <option value="anthropic">Anthropic</option>
       </select>
       <input v-model="apiKey" type="password" :placeholder="`Enter your ${provider} API key`" class="input flex-grow" />
-      <NButton @click="apiKeyStore.addNewKey({ provider, apiKey })" text="Add API Key"
+      <NBButton @click="apiKeyStore.addNewKey({ provider, apiKey })" text="Add API Key"
         buttonType="hover:border-gray-700" />
     </div>
     <p v-if="apiKeyStore.hasApiKey" class="mt-2 text-sm bg-green-200 text-green-800 p-2 rounded-md">
@@ -36,9 +36,9 @@ interface Key {
         <li class="w-full bg-gray-100 rounded-md concat flex gap-1" v-for="key in keys">
           <div class="uppercase text-xs font-semibold mr-2">{{ key.provider }}</div> <br />
           <div class="text-sm overflow-hidden">{{ key.apiKey }}</div>
-          <NButton @click="apiKeyStore.removeApiKey(key)" buttonType="hover:border ">
+          <NBButton @click="apiKeyStore.removeApiKey(key)" buttonType="hover:border ">
             <div class="i-gg-close"></div>
-          </NButton>
+          </NBButton>
         </li>
       </ul>
     </section>

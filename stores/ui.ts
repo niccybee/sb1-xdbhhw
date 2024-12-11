@@ -16,6 +16,9 @@ export const useUIStore = defineStore("ui", () => {
     return hideSidebar.value || engagedMessageMode.value;
   });
 
+  // flows
+  const showFlowCreator = ref(false);
+
   return {
     showKeyManager,
     showDebug,
@@ -27,5 +30,6 @@ export const useUIStore = defineStore("ui", () => {
     smallSidebar,
     engagedMessageMode,
     theme,
+    showFlowCreator,
   };
 });

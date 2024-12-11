@@ -2,6 +2,7 @@
 import { useChat } from '@ai-sdk/vue';
 import { useChatStore, generateUUID } from '../stores/chat';
 import { useFileDialog } from '@vueuse/core'
+import type Message from '@stores/chats'
 
 const chatForm = ref(null)
 const chats = useChatStore();
@@ -19,25 +20,47 @@ const fileInput = ref(null);
 
 const supportsFileUpload = computed(() => true);
 
-const { messages, input, handleSubmit, isLoading } = useChat({
+const { messages, input, handleSubmit, isLoading, onFinish } = useChat({
   initialMessages: currentMessages.value,
   onResponse(response) {
     // Handle successful response
     console.log('AI response received:', response)
   },
-  onFinish: (message: Message) => {
+  onFinish: (message, finishOptions) => {
     chats.addMessage(message);
-  }
+  },
+
 });
+
+const submit = async () => {
+  if (!input.trim()) return;
+
+  const message: Message = {
+    id: generateUUID(),
+    role: 'user',
+    content: input.value,
+  };
+
+  messages.value.push(message);
+  handleSubmit();
+  await onFinish(message);
+
+  input.value = '';
+}
 
 const loading = ref(true)
 
 onMounted(() => {
+  chats.createNewChat()
   loading.value = false;
 })
 
 const lockMessageBottom = computed(() => {
   if (ui.engagedMessageMode || chats.currentMessages.length > 0) return true
+
+})
+
+const inputMessage = computed(() => {
 
 })
 
@@ -47,12 +70,11 @@ const lockMessageBottom = computed(() => {
   <!--  <NBCard> -->
   <div class="">
 
-    <ChatMessages :messages="messages" :loading="isLoading"
-      :class="lockMessageBottom ? 'mb-64 h-full' : 'h-auto'">
+    <ChatMessages :messages="messages" :loading="isLoading" :class="lockMessageBottom ? 'mb-64 h-full' : 'h-auto'">
     </ChatMessages>
 
-    <form @submit.prevent="handleSubmit" class="border-1 bg-white border-gray-300 rounded-lg p-4 " ref="chatForm"
-      :class="lockMessageBottom ? 'fixed bottom-2 inset-x-1 w-full' : 'relative'">
+    <form @submit.prevent="chats.sendMessage(inputMessage)" class="border-1 bg-white border-gray-300 rounded-lg p-4 "
+      ref="chatForm" :class="lockMessageBottom ? 'fixed bottom-2 inset-x-1 w-full' : 'relative'">
       <p class="absolute text-xs text-gray-500 top-2 right-2"></p>
       <ChatInterfaceOptions />
 
