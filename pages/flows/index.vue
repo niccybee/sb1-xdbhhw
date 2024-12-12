@@ -11,10 +11,9 @@ const handleCreate = async (name: string) => {
   router.push(`flows/builder/${flow.slug}`);
 }
 
-const handleOpen = async (id) => {
-  console.log('flow id: ', id)
-  await flows.setCurrentFlow(id);
-  router.push(`flows/builder/${flows.currentFlow.slug}`)
+const handleOpen = async (flow: Flow) => {
+  await flows.setCurrentFlow(flow.id);
+  router.push(`/flows/builder/${flow.slug}`);
 }
 
 
@@ -43,9 +42,9 @@ const handleOpen = async (id) => {
       <NBCard
         class="card bg-white flex flex-col items-start justify-center px-4 py-2 hover:bg-grey-1 shadow-1 min-w-48 min-h-36 cursor-pointer relative hover:border-1 hover:border-blue-300"
         v-for="flow in flows.flows">
-        <div @click="handleOpen(flow.id)" class="i-gg-arrow-long-down-e absolute top-2 left-1 bg-gray-700"></div>
-        <p @click="handleOpen(flow.id)" class="text-xs text-gray-500">{{ flow.id }}</p>
-        <p @click="handleOpen(flow.id)">{{ flow.name ? flow.name : 'Unnamed Flow' }}</p>
+        <div @click="handleOpen(flow)" class="i-gg-arrow-long-down-e absolute top-2 left-1 bg-gray-700"></div>
+        <p @click="handleOpen(flow)" class="text-xs text-gray-500">{{ flow.id }}</p>
+        <p @click="handleOpen(flow)">{{ flow.name ? flow.name : 'Unnamed Flow' }}</p>
         <NBEditBox :model="flow.name"></NBEditBox>
         <div @click="handleOpen(flow.id)" class="i-gg-chevron-right absolute bottom-2 right-1 bg-gray-700"></div>
       </NBCard>
