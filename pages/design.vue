@@ -38,7 +38,15 @@ async function generateMediaWithAI() {
       })
     });
     const data = await response.json();
-    generatedImages.value = data.data.map((img: any) => img.url);
+    if (data.error) {
+      console.error('API Error:', data.error);
+      return;
+    }
+    if (data.data && Array.isArray(data.data)) {
+      generatedImages.value = data.data.map((img: any) => img.url);
+    } else {
+      console.error('Unexpected API response format:', data);
+    }
   } catch (error) {
     console.error('Error generating image:', error);
   } finally {
