@@ -2,7 +2,7 @@
 
 const props = defineProps<{
   messages: any[];
-  loading: boolean;
+  loading: boolean | undefined;
 }>()
 
 const messagesToShow = computed(() => {

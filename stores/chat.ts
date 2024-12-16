@@ -79,8 +79,6 @@ export const useChatStore = defineStore("chat", {
         this.createNewChat();
         
       }
-      
-      
       const userMessage: Message = {
         id: generateUUID(),
         role: "user",
@@ -105,7 +103,7 @@ export const useChatStore = defineStore("chat", {
       }
       
     },
-    async removeChat(id) {
+    removeChat(id) {
       const index = this.chats.findIndex((chat) => chat.id === id);
       this.chats.splice(index, 1);
     },

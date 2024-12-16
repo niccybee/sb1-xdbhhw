@@ -5,11 +5,11 @@ const chat = useChatStore()
 const ui = useUIStore()
 
 const showHeader = computed(() => {
-  return !ui.hideIntroHeader && chat.currentMessages.length < 1
+  return ui.showIntroHeader && chat.currentMessages.length < 1
 })
 
 const showQuickstart = computed(() => {
-  return !ui.hideQuickStartAction && chat.currentMessages.length < 1
+  return ui.showQuickStartAction && chat.currentMessages.length < 1
 })
 
 const hideStartSection = computed(() => {
@@ -22,7 +22,7 @@ const hideStartSection = computed(() => {
     <ChatList></ChatList>
   </aside>
   <main class="flex-grow mx-auto w-full p-4 flex flex-col ">
-    <section v-auto-animate class="h-full flex flex-col justify-end" v-show="!showHeader && !showQuickstart">
+    <section v-auto-animate class="h-full flex flex-col justify-end">
       <ChatHeader v-if="showHeader" />
       <ChatQuickStart v-if="showQuickstart" />
     </section>

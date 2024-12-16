@@ -8,6 +8,7 @@ const chatForm = ref(null)
 const chats = useChatStore();
 const ui = useUIStore();
 const { currentMessages } = storeToRefs(chats);
+const loading = ref(true)
 
 interface Message {
   id: string;
@@ -16,19 +17,14 @@ interface Message {
   file?: File | null;
 }
 
-const fileInput = ref(null);
+const currentId = computed(() => chats.currentChatId)
 
-const supportsFileUpload = computed(() => true);
-
-const { messages, input, handleSubmit, isLoading, onFinish } = useChat({
-  id: computed(() => chats.currentChatId),
+const { messages, input, handleSubmit, isLoading } = useChat({
+  id: currentId.value,
   initialMessages: currentMessages.value,
   onResponse(response) {
     // Handle successful response
     console.log('AI response received:', response)
-  },
-  onFinish: (message, finishOptions) => {
-    chats.addMessage(message);
   },
 });
 
@@ -37,26 +33,7 @@ watch(() => chats.currentChatId, () => {
   messages.value = chats.currentMessages;
 }, { immediate: true });
 
-const submit = async () => {
-  if (!input.trim()) return;
-
-  const message: Message = {
-    id: generateUUID(),
-    role: 'user',
-    content: input.value,
-  };
-
-  messages.value.push(message);
-  handleSubmit();
-  await onFinish(message);
-
-  input.value = '';
-}
-
-const loading = ref(true)
-
 onMounted(() => {
-  chats.createNewChat()
   loading.value = false;
 })
 
@@ -78,8 +55,8 @@ const inputMessage = computed(() => {
     <ChatMessages :messages="messages" :loading="isLoading" :class="lockMessageBottom ? 'mb-64 h-full' : 'h-auto'">
     </ChatMessages>
 
-    <form @submit.prevent="chats.sendMessage(inputMessage)" class="border-1 bg-white border-gray-300 rounded-lg p-4 "
-      ref="chatForm" :class="lockMessageBottom ? 'fixed bottom-2 inset-x-1 w-full' : 'relative'">
+    <form @submit.prevent="handleSubmit" class="border-1 bg-white border-gray-300 rounded-lg p-4 " ref="chatForm"
+      :class="lockMessageBottom ? 'fixed bottom-2 inset-x-1 w-full' : 'relative'">
       <p class="absolute text-xs text-gray-500 top-2 right-2"></p>
       <ChatInterfaceOptions />
 
@@ -89,7 +66,8 @@ const inputMessage = computed(() => {
 
       <div class="flex justify-between mt-1">
 
-        <ChatInterfaceFile :supports="supportsFileUpload" />
+        <!-- <ChatInterfaceFile :supports="supportsFileUpload" /> -->
+        <button>Fake bUtton</button>
 
         <NBButton type="submit" icon="i-gg-chevron-right"
           buttonType="flex items-center justify-center gradient text-white hover:bg-blue-600 transition duration-200"

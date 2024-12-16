@@ -21,10 +21,12 @@ const apiKey = computed(() => {
 });
 
 async function generateMediaWithAI() {
+  console.log('generating image')
   isGenerating.value = true;
   if (!apiKey.value) return;
 
   try {
+    console.log('init request')
     const response = await fetch('https://api.openai.com/v1/images/generations', {
       method: 'POST',
       headers: {
@@ -37,6 +39,7 @@ async function generateMediaWithAI() {
         size: "1024x1024"
       })
     });
+    console.log('response image', response)
     const data = await response.json();
     if (data.error) {
       console.error('API Error:', data.error);
