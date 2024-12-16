@@ -1,8 +1,5 @@
 <script setup lang="ts">
 import { useKeyboard } from './composables/initKeyboard'
-import { useToast } from 'vue-toastification' // Assuming you are using a toast library like vue-toastification
-
-const { toasts } = useToast(); // Initialize the toast composable
 
 onMounted(() => {
   useKeyboard()
