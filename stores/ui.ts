@@ -4,28 +4,30 @@ export const useUIStore = defineStore("ui", () => {
   const showDebug = ref(false);
   const showSettings = ref(false);
   const showHelp = ref(false);
-  // new section
-  const hideIntroHeader = ref(false);
-  const hideQuickStartAction = ref(false);
+  // chat settings
+  const showIntroHeader = ref(true);
+  const showQuickStartAction = ref(true);
   const engagedMessageMode = ref(false);
-  const hideSidebar = ref(false);
   // settings
   const theme = ref("light");
-
+  // sidebar
+  const hideSidebar = ref(false);
   const smallSidebar = computed(() => {
     return hideSidebar.value || engagedMessageMode.value;
   });
 
   // flows
   const showFlowCreator = ref(false);
+  const isFlowsLoading = ref(true);
 
   return {
+    isFlowsLoading,
     showKeyManager,
     showDebug,
     showSettings,
     showHelp,
-    hideQuickStartAction,
-    hideIntroHeader,
+    showQuickStartAction,
+    showIntroHeader,
     hideSidebar,
     smallSidebar,
     engagedMessageMode,
