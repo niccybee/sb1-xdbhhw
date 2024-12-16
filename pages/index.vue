@@ -2,9 +2,6 @@
 </script>
 
 <template>
-  <div class="min-h-screen flex items-center justify-center">
-    <Login />
-  </div>
   <div id="home" class="p-4">
     <section id="features" class="py-4">
       <h2 class="text-xl font-semibold mb-2">Features</h2>
