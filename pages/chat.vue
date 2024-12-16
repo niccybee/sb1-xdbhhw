@@ -1,4 +1,7 @@
 <script setup lang="ts">
+definePageMeta({
+  middleware: ['auth']
+})
 import { useChatStore } from '~/stores/chat'
 import { useUIStore } from '~/stores/ui'
 const chat = useChatStore()

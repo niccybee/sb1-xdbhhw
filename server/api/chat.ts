@@ -1,11 +1,10 @@
+
 import { streamText, convertToCoreMessages } from "ai";
 import { createOpenAI } from "@ai-sdk/openai";
 import { createAnthropic } from "@ai-sdk/anthropic";
 
-
 export default defineLazyEventHandler(async () => {
   const apiKey = useRuntimeConfig().openaiApiKey;
-
   if (!apiKey) throw new Error("Missing OpenAI API key");
 
   const openai = createOpenAI({
@@ -16,11 +15,17 @@ export default defineLazyEventHandler(async () => {
     apiKey: apiKey,
   });
 
-
-
   return defineEventHandler(async (event: any) => {
-    const { messages, model } = await readBody(event);
+    // Check for authentication
+    const userId = event.headers.get('x-replit-user-id')
+    if (!userId) {
+      throw createError({
+        statusCode: 401,
+        message: 'Unauthorized'
+      })
+    }
 
+    const { messages, model } = await readBody(event);
     const result = await streamText({
       model: model || openai("gpt-4-turbo"),
       messages: convertToCoreMessages(messages),
