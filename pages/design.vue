@@ -21,37 +21,33 @@ const apiKey = computed(() => {
 });
 
 async function generateMediaWithAI() {
-  console.log('generating image')
   isGenerating.value = true;
-  if (!apiKey.value) return;
+  if (!apiKey.value) {
+    toast.error('API key is required');
+    isGenerating.value = false;
+    return;
+  }
 
   try {
-    console.log('init request')
-    const response = await fetch('https://api.openai.com/v1/images/generations', {
+    const response = await $fetch('/api/design', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey.value}`
-      },
-      body: JSON.stringify({
+      body: {
         prompt: prompt.value,
-        n: numImages.value,
-        size: "1024x1024"
-      })
+        numImages: numImages.value,
+        apiKey: apiKey.value
+      }
     });
-    console.log('response image', response)
-    const data = await response.json();
-    if (data.error) {
-      console.error('API Error:', data.error);
-      return;
+
+    if (!response.success) {
+      throw new Error(response.error.message);
     }
-    if (data.data && Array.isArray(data.data)) {
-      generatedImages.value = data.data.map((img: any) => img.url);
-    } else {
-      console.error('Unexpected API response format:', data);
-    }
-  } catch (error) {
+
+    generatedImages.value = response.data.map((img: any) => img.url);
+    toast.success('Images generated successfully!');
+  } catch (error: any) {
     console.error('Error generating image:', error);
+    toast.error(error.message || 'Failed to generate images');
+    generatedImages.value = [];
   } finally {
     isGenerating.value = false;
   }
