@@ -1,37 +1,23 @@
-export const useUIStore = defineStore("ui", () => {
-  // const showModal = ref(false);
-  const showKeyManager = ref(false);
-  const showDebug = ref(false);
-  const showSettings = ref(false);
-  const showHelp = ref(false);
-  // chat settings
-  const showIntroHeader = ref(true);
-  const showQuickStartAction = ref(true);
-  const engagedMessageMode = ref(false);
-  // settings
-  const theme = ref("light");
-  // sidebar
-  const hideSidebar = ref(false);
-  const smallSidebar = computed(() => {
-    return hideSidebar.value || engagedMessageMode.value;
-  });
 
-  // flows
-  const showFlowCreator = ref(false);
-  const isFlowsLoading = ref(true);
+import { defineStore } from "pinia";
+import { useStorage } from "@vueuse/core";
 
-  return {
-    isFlowsLoading,
-    showKeyManager,
-    showDebug,
-    showSettings,
-    showHelp,
-    showQuickStartAction,
-    showIntroHeader,
-    hideSidebar,
-    smallSidebar,
-    engagedMessageMode,
-    theme,
-    showFlowCreator,
-  };
+export const useUIStore = defineStore("ui", {
+  state: () => ({
+    showKeyManager: useStorage("ui:showKeyManager", false),
+    showDebug: useStorage("ui:showDebug", false),
+    showSettings: useStorage("ui:showSettings", false),
+    showHelp: useStorage("ui:showHelp", false),
+    showIntroHeader: useStorage("ui:showIntroHeader", true),
+    showQuickStartAction: useStorage("ui:showQuickStartAction", true),
+    engagedMessageMode: useStorage("ui:engagedMessageMode", false),
+    theme: useStorage("ui:theme", "light"),
+    hideSidebar: useStorage("ui:hideSidebar", false),
+    showFlowCreator: useStorage("ui:showFlowCreator", false),
+    isFlowsLoading: useStorage("ui:isFlowsLoading", true),
+  }),
+
+  getters: {
+    smallSidebar: (state) => state.hideSidebar || state.engagedMessageMode,
+  },
 });

@@ -1,6 +1,6 @@
+
 import { defineStore } from "pinia";
 import { useStorage } from "@vueuse/core";
-import {generateText} from 'ai'
 
 interface Message {
   id: string;
@@ -16,32 +16,25 @@ interface Chat {
   messages: Message[];
   provider: string;
   model: string;
-}
-
-export function generateUUID() {
-  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
-    var r = (Math.random() * 16) | 0,
-      v = c == "x" ? r : (r & 0x3) | 0x8;
-    return v.toString(16);
-  });
+  usageTotal: number;
 }
 
 export const useChatStore = defineStore("chat", {
   state: () => ({
-    chats: useStorage("chats", []),
-    currentChatId: useStorage("currentChatId", ""),
-    selectedProvider: "openai",
-    selectedModel: "gpt-3.5-turbo",
+    chats: useStorage<Chat[]>("chats", []),
+    currentChatId: useStorage<string>("currentChatId", ""),
+    selectedProvider: useStorage<string>("selectedProvider", "openai"),
+    selectedModel: useStorage<string>("selectedModel", "gpt-3.5-turbo"),
   }),
+
   getters: {
-    currentChat: (state) => {
-      return state.chats.find((chat: Chat) => chat.id === state.currentChatId);
-    },
-    currentMessages: (state): Message[] => state.currentChat?.messages || [],
+    currentChat: (state) => state.chats.find((chat) => chat.id === state.currentChatId),
+    currentMessages: (state) => state.currentChat?.messages || [],
   },
+
   actions: {
     createNewChat() {
-      const newChat = {
+      const newChat: Chat = {
         id: generateUUID(),
         name: `Chat ${this.chats.length + 1}`,
         messages: [],
@@ -52,67 +45,73 @@ export const useChatStore = defineStore("chat", {
       this.chats.push(newChat);
       this.currentChatId = newChat.id;
     },
-    setCurrentChat(chatId) {
-      if (chatId !== this.currentChatId) {
-        this.currentChatId = chatId;
-      }
-    },
-    addMessage(message: Message) {
-      if (!this.currentChat) {
-        this.createNewChat();
-      }
-      if (this.currentChat.messages.length === 1) {
-        this.nameChat();
-      }
-      this.currentChat?.messages.push(message);
-    },
-    async nameChat() {
-      if (this.currentChat) {
-        this.currentChat.name = this.currentChat.messages[0].content.splice(
-          0,
-          30,
-        );
-      }
-    },
+
     async sendMessage(message: Message) {
       if (!this.currentChat) {
         this.createNewChat();
-        
       }
+
       const userMessage: Message = {
         id: generateUUID(),
         role: "user",
         content: message.content,
         created: new Date(),
-      }
+      };
+
+      this.currentChat?.messages.push(userMessage);
 
       try {
-        // call chat api and return result
-        useFetch('api/chat', {
+        await $fetch('/api/chat', {
           method: 'POST',
-          body: JSON.stringify({
-            messages: this.currentChat.messages,
-            provider: this.currentChat.provider,
-            model: this.currentChat.model,
-          }),
-        })
+          body: {
+            messages: this.currentChat?.messages,
+            provider: this.currentChat?.provider,
+            model: this.currentChat?.model,
+          },
+        });
       } catch (e) {
         console.error("Error generating text", e);
       } finally {
-        await this.nameChat()
+        await this.nameChat();
       }
-      
     },
-    removeChat(id) {
-      const index = this.chats.findIndex((chat) => chat.id === id);
-      this.chats.splice(index, 1);
-    },
-    async cleanChats() {
-      for (const chat of this.chats) {
-        if (chat.messages.length === 0) {
-          chat.messages = [];
-        }
+
+    setCurrentChat(chatId: string) {
+      if (chatId !== this.currentChatId) {
+        this.currentChatId = chatId;
       }
+    },
+
+    addMessage(message: Message) {
+      if (!this.currentChat) {
+        this.createNewChat();
+      }
+      if (this.currentChat?.messages.length === 1) {
+        this.nameChat();
+      }
+      this.currentChat?.messages.push(message);
+    },
+
+    async nameChat() {
+      if (this.currentChat?.messages[0]) {
+        this.currentChat.name = this.currentChat.messages[0].content.slice(0, 30);
+      }
+    },
+
+    removeChat(id: string) {
+      this.chats = this.chats.filter(chat => chat.id !== id);
+    },
+
+    cleanChats() {
+      this.chats = this.chats.filter(chat => chat.messages.length > 0);
     }
   },
 });
+
+function generateUUID(): string {
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    const v = c === "x" ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+}
