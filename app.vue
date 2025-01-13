@@ -11,6 +11,9 @@ onMounted(() => {
   <NuxtLoadingIndicator />
   <NuxtLayout>
     <NuxtPage />
+    <ClientOnly>
+      <Toaster position="bottom-right" richColors closeButton />
+    </ClientOnly>
   </NuxtLayout>
 </template>
 

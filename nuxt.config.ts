@@ -13,7 +13,8 @@ export default defineNuxtConfig({
     "@unocss/nuxt",
     "@formkit/auto-animate/nuxt",
     "@nuxtjs/mdc",
-    '@vueuse/nuxt'
+    "@vueuse/nuxt",
+    "vue-sonner/nuxt",
     // "radix-vue/nuxt",
   ],
   mdc: {

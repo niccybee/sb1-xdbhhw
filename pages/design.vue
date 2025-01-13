@@ -1,6 +1,7 @@
 
 <script setup lang="ts">
 import { AI_PROVIDERS } from '~/config/ai';
+const { $toast } = useNuxtApp();
 const keys = useApiKeyStore();
 const prompt = ref('');
 const generatedImages = ref<string[]>([]);
@@ -8,6 +9,8 @@ const temperature = ref(0.5);
 const numImages = ref(1);
 const isGenerating = ref(false);
 const selectedProvider = ref('openai');
+const ui = useUIStore();
+const loading = ref(true);
 
 const availableProviders = computed(() => {
   return Object.entries(AI_PROVIDERS)
@@ -23,7 +26,7 @@ const apiKey = computed(() => {
 async function generateMediaWithAI() {
   isGenerating.value = true;
   if (!apiKey.value) {
-    toast.error('API key is required');
+    $toast.error('API key is required');
     isGenerating.value = false;
     return;
   }
@@ -43,15 +46,18 @@ async function generateMediaWithAI() {
     }
 
     generatedImages.value = response.data.map((img: any) => img.url);
-    toast.success('Images generated successfully!');
+    $toast.success('Images generated successfully!');
   } catch (error: any) {
     console.error('Error generating image:', error);
-    toast.error(error.message || 'Failed to generate images');
+    $toast.error(error.message || 'Failed to generate images');
     generatedImages.value = [];
   } finally {
     isGenerating.value = false;
   }
 }
+onMounted(() => {
+  loading.value = false;
+})
 </script>
 
 <template>
@@ -75,7 +81,7 @@ async function generateMediaWithAI() {
     </div>
   </aside>
 
-  <main class="flex w-full flex-col items-center justify-center bg-orange-1 p-4">
+  <main class="flex w-full h-full flex-col items-center justify-center bg-orange-1 p-4 relative">
     <section id="images" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
       <div v-for="(image, index) in generatedImages" :key="index"
         class="image-item bg-gray-800 aspect-square rounded-lg overflow-hidden">
@@ -86,15 +92,18 @@ async function generateMediaWithAI() {
       </div>
     </section>
 
-    <form @submit.prevent="generateMediaWithAI" class="w-full mt-4 bg-gray-1 p-4 rounded-lg">
-      <textarea v-model="prompt" placeholder="Enter your prompt here..." class="w-full p-2 border rounded mb-4"
-        rows="3"></textarea>
+    <form @submit.prevent="generateMediaWithAI" class="border-1 bg-white border-gray-300 rounded-lg p-4 w-full"
+      ref="chatForm shadow-1" :class="ui.engagedMessageMode ? 'fixed bottom-2 inset-x-1 w-full' : 'relative'">
+      <div><input :disabled="loading" ref="chatInput" class="w-full rounded-lg border-1 border-gray-1 mb-1"
+          v-model="prompt" :placeholder="loading ? 'Loading...' : 'Enter your prompt here...'" />
+      </div>
       <div class="flex justify-end">
         <button type="submit" class="btn gradient text-white px-6 py-2 rounded" :disabled="isGenerating">
           {{ isGenerating ? 'Generating...' : 'Generate Images' }}
         </button>
       </div>
     </form>
+
   </main>
 </template>
 

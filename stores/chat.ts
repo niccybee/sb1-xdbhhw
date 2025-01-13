@@ -1,8 +1,7 @@
-
 import { defineStore } from "pinia";
 import { useStorage } from "@vueuse/core";
 
-interface Message {
+export interface Message {
   id: string;
   role: "user" | "assistant" | "system";
   content: string;
@@ -10,7 +9,7 @@ interface Message {
   created: Date;
 }
 
-interface Chat {
+export interface Chat {
   id: string;
   name: string;
   messages: Message[];
@@ -28,7 +27,8 @@ export const useChatStore = defineStore("chat", {
   }),
 
   getters: {
-    currentChat: (state) => state.chats.find((chat) => chat.id === state.currentChatId),
+    currentChat: (state) =>
+      state.chats.find((chat) => chat.id === state.currentChatId),
     currentMessages: (state) => state.currentChat?.messages || [],
   },
 
@@ -61,8 +61,8 @@ export const useChatStore = defineStore("chat", {
       this.currentChat?.messages.push(userMessage);
 
       try {
-        await $fetch('/api/chat', {
-          method: 'POST',
+        await $fetch("/api/chat", {
+          method: "POST",
           body: {
             messages: this.currentChat?.messages,
             provider: this.currentChat?.provider,
@@ -94,17 +94,20 @@ export const useChatStore = defineStore("chat", {
 
     async nameChat() {
       if (this.currentChat?.messages[0]) {
-        this.currentChat.name = this.currentChat.messages[0].content.slice(0, 30);
+        this.currentChat.name = this.currentChat.messages[0].content.slice(
+          0,
+          30,
+        );
       }
     },
 
     removeChat(id: string) {
-      this.chats = this.chats.filter(chat => chat.id !== id);
+      this.chats = this.chats.filter((chat) => chat.id !== id);
     },
 
     cleanChats() {
-      this.chats = this.chats.filter(chat => chat.messages.length > 0);
-    }
+      this.chats = this.chats.filter((chat) => chat.messages.length > 0);
+    },
   },
 });
 

@@ -3,9 +3,11 @@ const router = useRouter();
 const flows = useFlowsStore();
 const ui = useUIStore();
 const flowName = ref('');
+const { $toast } = useNuxtApp();
 
 onMounted(async () => {
   ui.isFlowsLoading = false;
+  $toast.success('Flows loaded')
 });
 
 const handleCreate = async (name: string) => {

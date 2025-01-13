@@ -1,4 +1,4 @@
-modules = ["vue-node-20", "nodejs-20"]
+modules = ["nodejs-20", "vue-node-20"]
 run = "npm run dev"
 
 [nix]

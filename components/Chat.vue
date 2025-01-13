@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { useChat } from '@ai-sdk/vue';
-import { useChatStore, generateUUID } from '../stores/chat';
+import { generateUUID } from '@/utils/genUUID';
+import { useChatStore } from '../stores/chat';
 import { useFileDialog } from '@vueuse/core'
-import type Message from '@stores/chats'
+import { type Message } from '@/stores/chat.js'
 
 const chatForm = ref(null)
 const chats = useChatStore();
@@ -30,7 +31,7 @@ const { messages, input, handleSubmit, isLoading } = useChat({
 
 // Watch for chat changes and update messages
 watch(() => chats.currentChatId, () => {
-  messages.value = chats.currentMessages;
+  messages.value = chats.currentChat.messages;
 }, { immediate: true });
 
 onMounted(() => {
@@ -51,11 +52,11 @@ const inputMessage = computed(() => {
 <template>
   <!--  <NBCard> -->
   <div class="">
-
+    {{ messages }}
     <ChatMessages :messages="messages" :loading="isLoading" :class="lockMessageBottom ? 'mb-64 h-full' : 'h-auto'">
     </ChatMessages>
 
-    <form @submit.prevent="handleSubmit" class="border-1 bg-white border-gray-300 rounded-lg p-4 " ref="chatForm"
+    <form @submit.prevent="handleSubmit" class="border-1 bg-white border-gray-300 rounded-lg p-4 " ref="chatForm shadow-1"
       :class="lockMessageBottom ? 'fixed bottom-2 inset-x-1 w-full' : 'relative'">
       <p class="absolute text-xs text-gray-500 top-2 right-2"></p>
       <ChatInterfaceOptions />
